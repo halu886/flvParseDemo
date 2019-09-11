@@ -1,6 +1,4 @@
-// 软解 flv.js
-
-// flv 加载成为 二进制
+import flvparse from './flvparse.js'
 
 var dropbox = document.querySelector('body div');
 
@@ -20,7 +18,7 @@ dropbox.addEventListener("drop", function (e) {
 function processflv(e) {
     var buffer = e.target.result;
     var unit8 = new Uint8Array(buffer);
-    console.log(unit8);
-    flvParse.setFlv(unit8);
+    flvparse.setFlv(unit8);
+    console.log(flvparse.toString());
 }
 

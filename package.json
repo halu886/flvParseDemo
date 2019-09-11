@@ -1,0 +1,17 @@
+{
+  "name": "TujiVideoPlayerDemo",
+  "version": "1.0.0",
+  "description": "1. <del>研习原理</del>\r 2. <del>安装环境</del>\r 3. 软解flv meta data\r 3. web界面\r 4. 播放功能",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8"
+  }
+}
