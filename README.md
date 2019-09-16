@@ -6,6 +6,7 @@
 1. <del>研习原理</del>
 2. <del>安装环境</del>
 3. <del>软解flv meta data</del>
+4. wasm软解flv
 3. web界面
 4. 播放功能
 
