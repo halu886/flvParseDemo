@@ -33,7 +33,7 @@ export default class flvDemux {
                 dataOffset += 8;
                 break;
             case 1:
-                { // Boolean type
+                {
                     const b = dv.getUint8(dataOffset);
                     value = !!b;
                     dataOffset += 1;
