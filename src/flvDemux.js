@@ -8,13 +8,16 @@ export default class flvDemux {
     constructor() {
     }
 
-    static parseMetaDate(arr) {
+    static parseMetaData(arr) {
         const name = flvDemux.parseScript(arr, 0);
         const value = flvDemux.parseScript(arr, name.size, arr.length - name.size);
         // return {}
         const data = {};
         data[name.data] = value.data;
         return data;
+    }
+    static parseVariable(arrayBuffer, dataOffset, dataSize) {
+        return flvDemux.parseObject(arrayBuffer, dataOffset, dataSize);
     }
     static parseObject(arrayBuffer, dataOffset, dataSize) {
 
@@ -77,7 +80,6 @@ export default class flvDemux {
                     break;
                 }
             case 3:
-
                 { // Object(s) type
                     value = {};
                     let terminal = 0; // workaround for malformed Objects which has missing ScriptDataObjectEnd

@@ -1,33 +1,83 @@
+import flvDemux from "./flvDemux.js";
+import mediainfo from './media-info';
 class tagDemux {
+
+    constructor() {
+        this.TAG = this.constructor.name;
+
+        this._config = {};
+
+        this._onError = null;
+        this._onMediaInfo = null;
+        this._onTrackMetadata = null;
+        this._onDataAvailable = null;
+
+        this._dataOffset = 0;
+        this._firstParse = true;
+        this._dispatch = false;
+
+        this._hasAudio = false;
+        this._hasVideo = false;
+
+        this._audioInitialMetadataDispatched = false;
+        this._videoInitialMetadataDispatched = false;
+
+        this._mediaInfo = new mediainfo();
+        this._mediaInfo.hasAudio = this._hasAudio;
+        this._mediaInfo.hasVideo = this._hasVideo;
+        this._metadata = null;
+        this._audioMetadata = null;
+        this._videoMetadata = null;
+
+        this._naluLengthSize = 4;
+        this._timestampBase = 0; // int32, in milliseconds
+        this._timescale = 1000;
+        this._duration = 0; // int32, in milliseconds
+        this._durationOverrided = false;
+        this._referenceFrameRate = {
+            fixed: true,
+            fps: 23.976,
+            fps_num: 23976,
+            fps_den: 1000
+        };
+
+        this._videoTrack = { type: 'video', id: 1, sequenceNumber: 0, addcoefficient: 2, samples: [], length: 0 };
+        this._audioTrack = { type: 'audio', id: 2, sequenceNumber: 1, addcoefficient: 2, samples: [], length: 0 };
+
+        this._littleEndian = (function () {
+            const buf = new ArrayBuffer(2);
+            (new DataView(buf)).setInt16(0, 256, true); // little-endian write
+            return (new Int16Array(buf))[0] === 256; // platform-spec read, if equal then LE
+        })();
+    }
+
     moof(tags) {
-        for (const t of tags) {
-            this.chunkparse(t);
+        for (let i = 0; i < tags.length; i++) {
+            this.parseChunks(tags[i]);
         }
 
     }
 
-    chunkparse(tag) {
-        switch (tag.type) {
-            case 8:
-                break;
-            case 9:
-                break;
-            case 18:
-                this.parseMetadata(tag.body);
+    parseChunks(flvtag) {
+
+        switch (flvtag.tagType) {
+            case 18: // ScriptDataObject
+                this.parseMetadata(flvtag.body);
                 break;
         }
     }
 
     parseMetadata(arr) {
-        const data = flvDemux.parseMetadata(arr);
+        const data = flvDemux.parseMetaData(arr);
         this._parseScriptData(data);
 
+        console.log(this._mediaInfo, this._mediaInfo.isComplete());
     }
 
     _parseScriptData(obj) {
         const scriptData = obj;
 
-        if (scriptData.hasOwnPerperty('onMetaData')) {
+        if (scriptData.hasOwnProperty('onMetaData')) {
             if (this._metaData) {
                 console.log('found another onMetaData tag!');
             }
@@ -95,7 +145,7 @@ class tagDemux {
 
             this._dispatch = false;
 
-            this._medieInfInfo.metadata = onMetaData;
+            this._mediaInfo.metadata = onMetaData;
 
             return this._mediaInfo;
         }
